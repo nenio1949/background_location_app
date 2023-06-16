@@ -1,0 +1,1 @@
+System.register(["./index-legacy-babfe83b.js"],(function(e,t){"use strict";var n,r;return{setters:[e=>{n=e.u,r=e.j}],execute:function(){e("default",(()=>{const e=n();return r.jsxs("div",{children:[r.jsx("div",{children:r.jsx("a",{onClick:()=>e(-1),children:"<返回"})}),"详情页"]})}))}}}));
