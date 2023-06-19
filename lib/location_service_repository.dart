@@ -4,10 +4,11 @@ import 'dart:math';
 import 'dart:ui';
 import 'package:background_locator_2/location_dto.dart';
 import 'file_manager.dart';
+import 'package:flutter/foundation.dart';
 
 class LocationServiceRepository {
   static final LocationServiceRepository _instance =
-  LocationServiceRepository._();
+      LocationServiceRepository._();
 
   LocationServiceRepository._();
 
@@ -20,8 +21,7 @@ class LocationServiceRepository {
   int _count = -1;
 
   Future<void> init(Map<dynamic, dynamic> params) async {
-    //TODO change logs
-    print("***********Init callback handler");
+    debugPrint("***********Init callback handler");
     if (params.containsKey('countInit')) {
       dynamic tmpCount = params['countInit'];
       if (tmpCount is double) {
@@ -36,22 +36,22 @@ class LocationServiceRepository {
     } else {
       _count = 0;
     }
-    print("$_count");
+    debugPrint("$_count");
     await setLogLabel("start");
     final SendPort? send = IsolateNameServer.lookupPortByName(isolateName);
     send?.send(null);
   }
 
   Future<void> dispose() async {
-    print("***********Dispose callback handler");
-    print("$_count");
+    debugPrint("***********Dispose callback handler");
+    debugPrint("$_count");
     await setLogLabel("end");
     final SendPort? send = IsolateNameServer.lookupPortByName(isolateName);
     send?.send(null);
   }
 
   Future<void> callback(LocationDto locationDto) async {
-    print("$_count ${DateTime.now()} $locationDto");
+    debugPrint("$_count ${DateTime.now()} $locationDto");
     await setLogPosition(_count, locationDto);
     SendPort? send = IsolateNameServer.lookupPortByName(isolateName);
     send?.send(locationDto.toJson());

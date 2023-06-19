@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:background_locator_2/settings/android_settings.dart';
 import 'package:background_locator_2/settings/ios_settings.dart';
 import 'package:background_locator_2/settings/locator_settings.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:background_locator_2/background_locator.dart';
 import 'package:background_locator_2/location_dto.dart';
@@ -19,11 +18,11 @@ class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
-  _MyAppState createState() => _MyAppState();
+  MyAppState createState() => MyAppState();
 }
 
 @pragma('vm:entry-point')
-class _MyAppState extends State<MyApp> {
+class MyAppState extends State<MyApp> {
   ReceivePort port = ReceivePort();
 
   String logStr = '';
@@ -45,7 +44,7 @@ class _MyAppState extends State<MyApp> {
         }))
     ..addJavaScriptChannel('flutterMessage',
         onMessageReceived: (JavaScriptMessage message) {
-      print("收到web端消息：${message.message}");
+      debugPrint("收到web端消息：${message.message}");
       var action = message.message;
       switch (action) {
         case 'start':
@@ -117,60 +116,60 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> initPlatformState() async {
-    print('Initializing...');
+    debugPrint('Initializing...');
     await BackgroundLocator.initialize();
     logStr = await FileManager.readLogFile();
-    print('Initialization done');
-    final _isRunning = await BackgroundLocator.isServiceRunning();
+    debugPrint('Initialization done');
+    final running = await BackgroundLocator.isServiceRunning();
     setState(() {
-      isRunning = _isRunning;
+      isRunning = running;
     });
-    print('Running ${isRunning.toString()}');
+    debugPrint('Running ${isRunning.toString()}');
   }
 
   @override
   Widget build(BuildContext context) {
-    final start = SizedBox(
-      width: double.maxFinite,
-      child: ElevatedButton(
-        child: const Text('开始位置跟踪'),
-        onPressed: () {
-          _onStart();
-        },
-      ),
-    );
-    final stop = SizedBox(
-      width: double.maxFinite,
-      child: ElevatedButton(
-        child: const Text('停止位置跟踪'),
-        onPressed: () {
-          onStop();
-        },
-      ),
-    );
-    final clear = SizedBox(
-      width: double.maxFinite,
-      child: ElevatedButton(
-        child: const Text('清除记录'),
-        onPressed: () {
-          FileManager.clearLogFile();
-          setState(() {
-            logStr = '';
-          });
-        },
-      ),
-    );
-    String msgStatus = "-";
-    if (isRunning) {
-      msgStatus = '正在运行';
-    } else {
-      msgStatus = '未运行';
-    }
-    final status = Text("状态: $msgStatus");
+    // final start = SizedBox(
+    //   width: double.maxFinite,
+    //   child: ElevatedButton(
+    //     child: const Text('开始位置跟踪'),
+    //     onPressed: () {
+    //       _onStart();
+    //     },
+    //   ),
+    // );
+    // final stop = SizedBox(
+    //   width: double.maxFinite,
+    //   child: ElevatedButton(
+    //     child: const Text('停止位置跟踪'),
+    //     onPressed: () {
+    //       onStop();
+    //     },
+    //   ),
+    // );
+    // final clear = SizedBox(
+    //   width: double.maxFinite,
+    //   child: ElevatedButton(
+    //     child: const Text('清除记录'),
+    //     onPressed: () {
+    //       FileManager.clearLogFile();
+    //       setState(() {
+    //         logStr = '';
+    //       });
+    //     },
+    //   ),
+    // );
+    // String msgStatus = "-";
+    // if (isRunning) {
+    //   msgStatus = '正在运行';
+    // } else {
+    //   msgStatus = '未运行';
+    // }
+    // final status = Text("状态: $msgStatus");
 
-    final log = Text(
-      logStr,
-    );
+    // final log = Text(
+    //   logStr,
+    // );
 
     return MaterialApp(
       home: Scaffold(
@@ -216,19 +215,19 @@ class _MyAppState extends State<MyApp> {
 
   void onStop() async {
     await BackgroundLocator.unRegisterLocationUpdate();
-    final _isRunning = await BackgroundLocator.isServiceRunning();
+    final running = await BackgroundLocator.isServiceRunning();
     setState(() {
-      isRunning = _isRunning;
+      isRunning = running;
     });
   }
 
   void _onStart() async {
     if (await _checkLocationPermission()) {
       await _startLocator();
-      final _isRunning = await BackgroundLocator.isServiceRunning();
+      final running = await BackgroundLocator.isServiceRunning();
 
       setState(() {
-        isRunning = _isRunning;
+        isRunning = running;
         lastLocation = null;
       });
     } else {
@@ -238,11 +237,9 @@ class _MyAppState extends State<MyApp> {
 
   Future<bool> _checkLocationPermission() async {
     var storage = await Permission.storage.request();
-    print("3333,$storage");
     if (storage.isGranted) {
       final access = await Permission.locationWhenInUse.status;
       final backAccess = await Permission.locationAlways.status;
-      print("222,${access},${backAccess}");
       if (access.isGranted && backAccess.isGranted) {
         return true;
       } else {
@@ -255,7 +252,7 @@ class _MyAppState extends State<MyApp> {
 
   Future<bool> _getPermission() async {
     var status = await Permission.locationWhenInUse.request();
-    print("1111,$status");
+    debugPrint("1111,$status");
     if (status.isGranted) {
       var backStatus = await Permission.locationAlways.request();
       return status.isGranted && backStatus.isGranted;
