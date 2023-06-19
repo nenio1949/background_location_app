@@ -74,6 +74,7 @@ class MyAppState extends State<MyApp> {
     IsolateNameServer.registerPortWithName(
         port.sendPort, LocationServiceRepository.isolateName);
 
+    /// 端口监听定位回调
     port.listen(
       (data) async {
         if (data != null) {
@@ -235,6 +236,7 @@ class MyAppState extends State<MyApp> {
     }
   }
 
+  /// 检查位置权限
   Future<bool> _checkLocationPermission() async {
     var storage = await Permission.storage.request();
     if (storage.isGranted) {
@@ -250,6 +252,7 @@ class MyAppState extends State<MyApp> {
     }
   }
 
+  /// 获取位置权限
   Future<bool> _getPermission() async {
     var status = await Permission.locationWhenInUse.request();
     debugPrint("1111,$status");
@@ -261,6 +264,7 @@ class MyAppState extends State<MyApp> {
     }
   }
 
+  /// 后台定位配置
   Future<void> _startLocator() async {
     Map<String, dynamic> data = {'countInit': 1};
     return await BackgroundLocator.registerLocationUpdate(

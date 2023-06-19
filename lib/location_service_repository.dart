@@ -20,6 +20,7 @@ class LocationServiceRepository {
 
   int _count = -1;
 
+  /// 初始化
   Future<void> init(Map<dynamic, dynamic> params) async {
     debugPrint("***********Init callback handler");
     if (params.containsKey('countInit')) {
@@ -42,6 +43,7 @@ class LocationServiceRepository {
     send?.send(null);
   }
 
+  /// 释放
   Future<void> dispose() async {
     debugPrint("***********Dispose callback handler");
     debugPrint("$_count");
@@ -50,20 +52,23 @@ class LocationServiceRepository {
     send?.send(null);
   }
 
+  /// 回调
   Future<void> callback(LocationDto locationDto) async {
     debugPrint("$_count ${DateTime.now()} $locationDto");
-    await setLogPosition(_count, locationDto);
+    // await setLogPosition(_count, locationDto);
     SendPort? send = IsolateNameServer.lookupPortByName(isolateName);
     send?.send(locationDto.toJson());
     _count++;
   }
 
+  /// 打印标签（开始/结束）
   static Future<void> setLogLabel(String label) async {
     final date = DateTime.now();
     await FileManager.writeToLogFile(
         '------------\n$label: ${formatDateLog(date)}\n------------\n');
   }
 
+  /// 打印定位日志
   static Future<void> setLogPosition(int count, LocationDto data) async {
     final date = DateTime.now();
     // await FileManager.writeToLogFile(
@@ -77,10 +82,12 @@ class LocationServiceRepository {
     return ((val * mod).round().toDouble() / mod);
   }
 
+  /// 格式化时间
   static String formatDateLog(DateTime date) {
     return "${date.hour}:${date.minute}:${date.second}";
   }
 
+  /// 格式化日志
   static String formatLog(LocationDto locationDto) {
     return "${dp(locationDto.latitude, 15)} ${dp(locationDto.longitude, 15)}";
   }
